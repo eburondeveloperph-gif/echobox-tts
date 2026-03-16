@@ -3,17 +3,7 @@
 **Developed for Eburon AI by Master E**  
 *Head of Eburon AI Development Team*
 
-Eburon AI Text-to-Speech system with Itawit language support, voice cloning, and fine-tuning capabilities.
-
-## Features
-
-- **TTS (Text-to-Speech)**: Multiple backends supported
-  - Qwen3-TTS (MLX - Apple Silicon)
-  - Coqui XTTS v2 (Cross-platform, cloud-ready)
-- **STT (Speech-to-Text)**: Faster Whisper for transcription
-- **Voice Cloning**: Coqui XTTS v2 for voice cloning
-- **Fine-tuning**: Train custom voice models with XTTS
-- **Itawit Language**: Native Itawit language support with lexicon
+Eburon AI Text-to-Speech system with Itawit language support.
 
 ## Quick Start
 
@@ -56,15 +46,6 @@ railway deploy
 | `/generate` | POST | Generate TTS audio |
 | `/clone` | POST | Clone voice |
 | `/transcribe` | POST | STT transcription |
-
-## Itawit Language Support
-
-Verified Itawit lexicon:
-- "Ma-ngo" = Hello
-- "Mabbalat" = Thank you  
-- "Oon" = Yes
-- "Awan" = No
-- "Jehova i Dios" = Jehovah is God
 
 ## License
 

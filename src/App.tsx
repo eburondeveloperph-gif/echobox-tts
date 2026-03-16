@@ -159,6 +159,17 @@ const LANGUAGES = [
   { code: 'bik', name: 'Bikol' },
 ];
 
+const VOICES = [
+  { id: 'itawit', name: 'Itawit (Native)' },
+  { id: 'echo', name: 'Echo (Male)' },
+  { id: 'nova', name: 'Nova (Female)' },
+  { id: 'shell', name: 'Shell (Female)' },
+  { id: 'wave', name: 'Wave (Male)' },
+  { id: 'amber', name: 'Amber (Female)' },
+  { id: 'floyd', name: 'Floyd (Male)' },
+  { id: 'clone', name: 'Voice Clone' },
+];
+
 const EMOTIONS = [
   { id: 'neutral', label: 'Neutral' },
   { id: 'happy', label: 'Happy' },
@@ -200,6 +211,9 @@ function App() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [cloneAudio, setCloneAudio] = useState<File | null>(null);
+  const [cloneName, setCloneName] = useState('');
+  const [uploading, setUploading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -230,10 +244,37 @@ function App() {
     setAudioUrl('');
 
     try {
+      let voicePromptId = null;
+      
+      if (voice === 'clone' && cloneAudio) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('audio', cloneAudio);
+        formData.append('name', cloneName || 'Voice Clone');
+        formData.append('reference_text', text);
+        
+        const uploadRes = await fetch(`${API_URL}/voice/clone`, {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadRes.ok) throw new Error('Failed to upload voice clone');
+        
+        const uploadData = await uploadRes.json();
+        voicePromptId = uploadData.voice_prompt_id;
+        setUploading(false);
+      }
+
       const res = await fetch(`${API_URL}/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, voice, emotion, language: 'itawit' }),
+        body: JSON.stringify({ 
+          text, 
+          voice: voice === 'clone' ? 'echo' : voice, 
+          emotion, 
+          language: 'itawit',
+          voice_prompt_id: voicePromptId
+        }),
       });
 
       if (!res.ok) throw new Error('Generation failed');
@@ -246,6 +287,7 @@ function App() {
       setError(err instanceof Error ? err.message : 'Failed to generate');
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -343,11 +385,41 @@ function App() {
         <div className="sidebar-section">
           <h4>Voice</h4>
           <select value={voice} onChange={(e) => setVoice(e.target.value)}>
-            <option value="itawit">Itawit (Native)</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
+            {VOICES.map((v) => (
+              <option key={v.id} value={v.id}>{v.name}</option>
+            ))}
           </select>
         </div>
+
+        {voice === 'clone' && (
+          <div className="sidebar-section">
+            <h4>Voice Clone</h4>
+            <input
+              type="text"
+              placeholder="Clone name"
+              value={cloneName}
+              onChange={(e) => setCloneName(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                marginBottom: '0.5rem',
+                background: 'var(--bg)',
+                border: '1px solid #333',
+                borderRadius: '6px',
+                color: 'var(--text)',
+              }}
+            />
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={(e) => setCloneAudio(e.target.files?.[0] || null)}
+              style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}
+            />
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              Upload a reference audio (5-30 sec) to clone your voice
+            </p>
+          </div>
+        )}
 
         <div className="sidebar-section">
           <h4>Emotion</h4>
@@ -407,8 +479,8 @@ function App() {
           />
 
           <div className="controls">
-            <button onClick={generate} disabled={loading} style={{ width: '100%' }}>
-              {loading ? 'Generating...' : 'Generate Speech'}
+            <button onClick={generate} disabled={loading || uploading} style={{ width: '100%' }}>
+              {uploading ? 'Uploading Voice Clone...' : loading ? 'Generating...' : 'Generate Speech'}
             </button>
           </div>
         </div>

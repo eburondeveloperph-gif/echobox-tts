@@ -77,3 +77,21 @@ curl -X POST http://localhost:8000/transcribe \
 ## License
 
 Proprietary - All rights reserved © 2026 Eburon
+
+## Desktop App (Tauri - Mac/Windows/Linux)
+
+```bash
+# Install dependencies
+npm install
+
+# Development
+npm run tauri dev
+
+# Build for production
+npm run tauri build
+```
+
+This creates native desktop apps for:
+- macOS (.dmg/.app)
+- Windows (.exe/.msi)
+- Linux (.deb/.AppImage)

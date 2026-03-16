@@ -152,6 +152,8 @@ const LANGUAGES = [
   { code: 'yi', name: 'Yiddish' },
   { code: 'yo', name: 'Yoruba' },
   { code: 'zu', name: 'Zulu' },
+  { code: 'nl', name: 'Dutch (Netherlands)' },
+  { code: 'nl_be', name: 'Dutch (Flemish)' },
   { code: 'tl', name: 'Tagalog' },
   { code: 'itw', name: 'Itawit' },
   { code: 'pag', name: 'Pangasinan' },
@@ -161,6 +163,9 @@ const LANGUAGES = [
 
 const VOICES = [
   { id: 'itawit', name: 'Itawit (Native)' },
+  { id: 'tagalog', name: 'Tagalog (Native)' },
+  { id: 'dutch_nl', name: 'Dutch NL (Native)' },
+  { id: 'dutch_be', name: 'Dutch BE (Native)' },
   { id: 'echo', name: 'Echo (Male)' },
   { id: 'nova', name: 'Nova (Female)' },
   { id: 'shell', name: 'Shell (Female)' },
@@ -202,6 +207,7 @@ interface HistoryItem {
 function App() {
   const [text, setText] = useState('Ma-ngo! Mabbalat.');
   const [voice, setVoice] = useState('itawit');
+  const [language, setLanguage] = useState('itw');
   const [emotion, setEmotion] = useState('neutral');
   const [sttLang, setSttLang] = useState('en');
   const [loading, setLoading] = useState(false);
@@ -216,6 +222,19 @@ function App() {
   const [uploading, setUploading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+
+  const voiceToLanguage: Record<string, string> = {
+    'itawit': 'itw',
+    'tagalog': 'tl',
+    'dutch_nl': 'nl',
+    'dutch_be': 'nl_be',
+  };
+
+  useEffect(() => {
+    if (voice in voiceToLanguage) {
+      setLanguage(voiceToLanguage[voice]);
+    }
+  }, [voice]);
 
   useEffect(() => {
     fetchHistory();
@@ -272,7 +291,7 @@ function App() {
           text, 
           voice: voice === 'clone' ? 'echo' : voice, 
           emotion, 
-          language: 'itawit',
+          language: language,
           voice_prompt_id: voicePromptId
         }),
       });
@@ -382,6 +401,16 @@ function App() {
       </button>
 
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-section">
+          <h4>Language</h4>
+          <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+            <option value="itw">Itawit</option>
+            <option value="tl">Tagalog</option>
+            <option value="nl">Dutch (Netherlands)</option>
+            <option value="nl_be">Dutch (Flemish)</option>
+          </select>
+        </div>
+
         <div className="sidebar-section">
           <h4>Voice</h4>
           <select value={voice} onChange={(e) => setVoice(e.target.value)}>

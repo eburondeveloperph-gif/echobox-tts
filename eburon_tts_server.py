@@ -262,14 +262,72 @@ LANGUAGE_LEXICON = {
     "ru": {"name": "Russian", "sample": "Привет! Это тест Eburon TTS."},
     # Custom - requires training
     "nl": {
-        "name": "Dutch (Flemish) - Training",
+        "name": "Dutch (Netherlands)",
         "sample": "Hallo! Dit is een test van Eburon TTS.",
         "needs_training": True,
+        "training_data": "/Users/master/vbox/voicebox/scripts/training_data/dutch_nl",
+        "lexicon": {
+            # Greetings
+            "hallo": "Hello",
+            "goedemorgen": "Good morning",
+            "goedenavond": "Good evening",
+            "dag": "Day/Bye",
+            "tot_ziens": "Goodbye",
+            # Common
+            "dank_u": "Thank you",
+            "alstublieft": "Please",
+            "ja": "Yes",
+            "nee": "No",
+            "sorry": "Sorry",
+            # Questions
+            "hoe_gaat_het": "How are you",
+            "wat_is_je_naam": "What is your name",
+            "waar_woon_je": "Where do you live",
+        },
+    },
+    "nl_be": {
+        "name": "Dutch (Flemish)",
+        "sample": "Hallo! Dit is een test van Eburon TTS.",
+        "needs_training": True,
+        "training_data": "/Users/master/vbox/voicebox/scripts/training_data/dutch_be",
+        "lexicon": {
+            # Greetings
+            "hallo": "Hello",
+            "goedemorgen": "Good morning",
+            "goedenavond": "Good evening",
+            "dag": "Day/Bye",
+            "tot_ziens": "Goodbye",
+            # Common
+            "dank_u": "Thank you",
+            "alstublieft": "Please",
+            "ja": "Yes",
+            "nee": "No",
+            "sorry": "Sorry",
+        },
     },
     "tl": {
-        "name": "Tagalog - Training",
+        "name": "Tagalog",
         "sample": "Kamusta! Ito ay isang test ng Eburon TTS.",
         "needs_training": True,
+        "training_data": "/Users/master/vbox/voicebox/scripts/training_data/tagalog",
+        "lexicon": {
+            # Greetings
+            "kamusta": "Hello/How are you",
+            "magandang_umaga": "Good morning",
+            "magandang_hapon": "Good afternoon",
+            "magandang_gabi": "Good evening",
+            "paalam": "Goodbye",
+            # Common
+            "salamat": "Thank you",
+            "paki": "Please",
+            "oo": "Yes",
+            "hindi": "No",
+            "pakiusap": "Please",
+            # Questions
+            "ano_ang_pangalan_mo": "What is your name",
+            "saan_ka_nakatira": "Where do you live",
+            "kumusta_ka": "How are you",
+        },
     },
     "itw": {
         "name": "Itawit - Training",
@@ -530,45 +588,63 @@ async def generate_speech(request: TTSRequest):
     # Use generate_voice_design with instruct for emotion/style control
     generation_kwargs = {"text": request.text}
 
-    # Handle Itawit language with training data
-    itawit_training_dir = "/Users/master/vbox/voicebox/scripts/training_data/itawit"
-    # Itawit-specific voice description for native-like output
-    itawit_voice_desc = (
-        "Itawit language speaker from Cagayan Valley, Philippines. "
-        "Northern Luzon Philippine accent. Clear enunciation, natural Philippine speech patterns. "
-        "Medium pace, slightly melodic intonation typical of Itawit speakers."
-    )
+    # Language-specific voice descriptions and training data
+    LANGUAGE_VOICE_DESCS = {
+        "itw": (
+            "Itawit language speaker from Cagayan Valley, Philippines. "
+            "Northern Luzon Philippine accent. Clear enunciation, natural Philippine speech patterns. "
+            "Medium pace, slightly melodic intonation typical of Itawit speakers."
+        ),
+        "tl": (
+            "Tagalog language speaker from Philippines. "
+            "Native Tagalog accent. Clear enunciation, natural Filipino speech patterns. "
+            "Medium pace, gentle intonation typical of Tagalog speakers."
+        ),
+        "nl": (
+            "Dutch language speaker from Netherlands. "
+            "Standard Dutch accent (Nederlands). Clear enunciation, characteristic Dutch speech patterns. "
+            "Medium pace, distinctive Dutch intonation."
+        ),
+        "nl_be": (
+            "Dutch language speaker from Belgium (Flemish). "
+            "Flemish Dutch accent (Vlaams). Clear enunciation, characteristic Belgian Dutch speech patterns. "
+            "Medium pace, distinctive Flemish intonation."
+        ),
+    }
 
-    if language == "itw" and os.path.exists(itawit_training_dir):
+    # Get training data directory for the language
+    lang_config = LANGUAGE_LEXICON.get(language, {})
+    training_dir = lang_config.get("training_data")
+    voice_desc = LANGUAGE_VOICE_DESCS.get(language)
+
+    if training_dir and os.path.exists(training_dir):
         # Find reference audio in training data
         training_audio = None
-        for f in os.listdir(itawit_training_dir):
+        for f in os.listdir(training_dir):
             if f.endswith((".wav", ".mp3", ".flac")):
-                training_audio = os.path.join(itawit_training_dir, f)
+                training_audio = os.path.join(training_dir, f)
                 break
 
         if training_audio and os.path.exists(training_audio):
             try:
-                # For Itawit, use the training audio name in the instruct to help with voice cloning
                 training_name = os.path.basename(training_audio)
-                itawit_instruct = (
-                    f"Speak in Itawit language ({itawit_voice_desc}). "
+                lang_instruct = (
+                    f"Speak in {lang_config.get('name', 'native language')} ({voice_desc}). "
                     f"Reference voice from: {training_name}. "
                 )
-                # Prepend Itawit instruction to the instruct prompt
                 if "instruct" in generation_kwargs:
                     generation_kwargs["instruct"] = (
-                        itawit_instruct + generation_kwargs["instruct"]
+                        lang_instruct + generation_kwargs["instruct"]
                     )
 
-                print(f"Applied Itawit training data from: {training_audio}")
+                print(f"Applied {language} training data from: {training_audio}")
             except Exception as e:
-                print(f"Warning: Failed to apply Itawit training: {e}")
-        else:
-            # Still add Itawit voice description even without training audio
+                print(f"Warning: Failed to apply {language} training: {e}")
+        elif voice_desc:
+            # Still add voice description even without training audio
             if "instruct" in generation_kwargs:
                 generation_kwargs["instruct"] = (
-                    f"Speak in Itawit language ({itawit_voice_desc}). "
+                    f"Speak in {lang_config.get('name', 'native language')} ({voice_desc}). "
                     + generation_kwargs["instruct"]
                 )
 

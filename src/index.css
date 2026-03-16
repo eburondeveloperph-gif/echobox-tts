@@ -175,6 +175,10 @@ audio {
   margin-bottom: 1rem;
 }
 
+.input-section h3 {
+  margin-bottom: 1rem;
+}
+
 .footer {
   padding: 1rem 2rem;
   border-top: 1px solid #333;

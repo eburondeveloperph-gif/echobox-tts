@@ -1,0 +1,1 @@
+/Users/master/eburon-tts/src-tauri/target/release/eburon-tts: /Users/master/eburon-tts/src-tauri/build.rs /Users/master/eburon-tts/src-tauri/capabilities /Users/master/eburon-tts/src-tauri/src/lib.rs /Users/master/eburon-tts/src-tauri/src/main.rs /Users/master/eburon-tts/src-tauri/tauri.conf.json

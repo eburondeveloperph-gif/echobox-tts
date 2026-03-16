@@ -7,7 +7,13 @@ Eburon AI Text-to-Speech system with Itawit language support.
 
 ## Quick Start
 
-### Local Deployment
+### One-Click Bootstrap
+
+```bash
+./echovoice.sh
+```
+
+### Manual Setup
 
 ```bash
 # Clone the repo

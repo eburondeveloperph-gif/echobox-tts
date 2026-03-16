@@ -1,0 +1,59 @@
+# Eburon TTS - Proprietary License Agreement
+
+**Effective Date:** March 16, 2026
+
+## Ownership
+
+Eburon TTS ("Software") is proprietary and exclusively owned by **Eburon** (hereinafter "Licensor"). All rights, title, and interest in and to the Software, including all intellectual property rights, are and shall remain the exclusive property of Licensor.
+
+## License Grant
+
+Subject to the terms and conditions of this Agreement, Licensor grants you (hereinafter "Licensee") a **non-exclusive, non-transferable, revocable license** to use the Software solely for your internal business purposes.
+
+## Restrictions
+
+You MAY NOT:
+- Redistribute, sublicense, sell, or lease the Software
+- Copy, modify, or create derivative works
+- Reverse engineer, decompile, or disassemble the Software
+- Remove any proprietary notices or labels
+- Use the Software for competing products or services
+- Transfer or assign this license to any third party
+- Publicly share demonstrations or benchmarks without written consent
+
+## Itawit Language Model
+
+The Itawit language model, voice cloning capabilities, training data, and any fine-tuned models generated using the Software are **exclusive intellectual property** of Eburon.
+
+## Ownership of Derivatives
+
+Any modifications, enhancements, or derivative works created by Licensee, including but not limited to fine-tuned models, trained weights, and custom voice profiles, shall be owned exclusively by Licensor.
+
+## Confidentiality
+
+Licensee agrees to maintain the confidentiality of the Software and shall not disclose any technical details, APIs, model architectures, or training methodologies to third parties.
+
+## Termination
+
+This license may be terminated by Licensor at any time for violation of any terms. Upon termination, Licensee must immediately cease all use of the Software and destroy all copies.
+
+## Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. LICENSOR DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED.
+
+## Limitation of Liability
+
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE SOFTWARE.
+
+## Governing Law
+
+This Agreement shall be governed by and construed in accordance with the laws of the Philippines.
+
+## Contact
+
+For licensing inquiries: **Eburon**  
+Email: [Contact Eburon]
+
+---
+
+**© 2026 Eburon. All rights reserved.**

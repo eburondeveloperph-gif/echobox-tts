@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+numpy
+scipy
+soundfile
+torch
+transformers
+accelerate
+coqui-tts
+faster-whisper
+httpx
+python-multipart
+pydantic

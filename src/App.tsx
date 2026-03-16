@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -21,22 +21,15 @@ const LANGUAGES = [
   { code: 'ban', name: 'Balinese' },
   { code: 'bal', name: 'Baluchi' },
   { code: 'bm', name: 'Bambara' },
-  { code: 'ba', name: 'Baoulé' },
   { code: 'ba', name: 'Bashkir' },
   { code: 'eu', name: 'Basque' },
-  { code: 'btk', name: 'Batak Karo' },
-  { code: 'btk', name: 'Batak Simalungun' },
-  { code: 'btk', name: 'Batak Toba' },
   { code: 'be', name: 'Belarusian' },
   { code: 'bem', name: 'Bemba' },
   { code: 'bn', name: 'Bengali' },
-  { code: 'bew', name: 'Betawi' },
   { code: 'bho', name: 'Bhojpuri' },
-  { code: 'bik', name: 'Bikol' },
   { code: 'bs', name: 'Bosnian' },
   { code: 'br', name: 'Breton' },
   { code: 'bg', name: 'Bulgarian' },
-  { code: 'bua', name: 'Buryat' },
   { code: 'yue', name: 'Cantonese' },
   { code: 'ca', name: 'Catalan' },
   { code: 'ceb', name: 'Cebuano' },
@@ -48,19 +41,13 @@ const LANGUAGES = [
   { code: 'chk', name: 'Chuukese' },
   { code: 'cv', name: 'Chuvash' },
   { code: 'co', name: 'Corsican' },
-  { code: 'crh', name: 'Crimean Tatar (Cyrillic)' },
-  { code: 'crh', name: 'Crimean Tatar (Latin)' },
   { code: 'hr', name: 'Croatian' },
   { code: 'cs', name: 'Czech' },
   { code: 'da', name: 'Danish' },
   { code: 'prs', name: 'Dari' },
   { code: 'dv', name: 'Dhivehi' },
-  { code: 'din', name: 'Dinka' },
-  { code: 'doi', name: 'Dogri' },
-  { code: 'dyu', name: 'Dombe' },
   { code: 'nl', name: 'Dutch' },
   { code: 'nl-BE', name: 'Dutch (Flemish)' },
-  { code: 'dyu', name: 'Dyula' },
   { code: 'dz', name: 'Dzongkha' },
   { code: 'en', name: 'English' },
   { code: 'eo', name: 'Esperanto' },
@@ -70,13 +57,9 @@ const LANGUAGES = [
   { code: 'fj', name: 'Fijian' },
   { code: 'fil', name: 'Filipino' },
   { code: 'fi', name: 'Finnish' },
-  { code: 'fon', name: 'Fon' },
   { code: 'fr', name: 'French' },
   { code: 'fr-CA', name: 'French (Canada)' },
   { code: 'fy', name: 'Frisian' },
-  { code: 'fur', name: 'Friulian' },
-  { code: 'ff', name: 'Fulani' },
-  { code: 'ga', name: 'Ga' },
   { code: 'gl', name: 'Galician' },
   { code: 'ka', name: 'Georgian' },
   { code: 'de', name: 'German' },
@@ -84,7 +67,6 @@ const LANGUAGES = [
   { code: 'gn', name: 'Guarani' },
   { code: 'gu', name: 'Gujarati' },
   { code: 'ht', name: 'Haitian Creole' },
-  { code: 'hlt', name: 'Hakha Chin' },
   { code: 'ha', name: 'Hausa' },
   { code: 'haw', name: 'Hawaiian' },
   { code: 'he', name: 'Hebrew' },
@@ -92,115 +74,53 @@ const LANGUAGES = [
   { code: 'hi', name: 'Hindi' },
   { code: 'hmn', name: 'Hmong' },
   { code: 'hu', name: 'Hungarian' },
-  { code: 'hrx', name: 'Hunsrik' },
-  { code: 'iba', name: 'Iban' },
   { code: 'is', name: 'Icelandic' },
   { code: 'ig', name: 'Igbo' },
   { code: 'ilo', name: 'Ilocano' },
   { code: 'id', name: 'Indonesian' },
-  { code: 'iu', name: 'Inuktut (Latin)' },
-  { code: 'iu', name: 'Inuktut (Syllabics)' },
   { code: 'ga', name: 'Irish' },
   { code: 'it', name: 'Italian' },
-  { code: 'jam', name: 'Jamaican Patois' },
   { code: 'ja', name: 'Japanese' },
   { code: 'jv', name: 'Javanese' },
-  { code: 'kac', name: 'Jingpo' },
-  { code: 'kl', name: 'Kalaallisut' },
   { code: 'kn', name: 'Kannada' },
-  { code: 'kr', name: 'Kanuri' },
-  { code: 'pam', name: 'Kapampangan' },
   { code: 'kk', name: 'Kazakh' },
-  { code: 'kha', name: 'Khasi' },
   { code: 'km', name: 'Khmer' },
-  { code: 'cgg', name: 'Kiga' },
-  { code: 'kng', name: 'Kikongo' },
-  { code: 'rw', name: 'Kinyarwanda' },
-  { code: 'ktu', name: 'Kituba' },
-  { code: 'kok', name: 'Kokborok' },
-  { code: 'kv', name: 'Komi' },
-  { code: 'koi', name: 'Konkani' },
   { code: 'ko', name: 'Korean' },
-  { code: 'kri', name: 'Krio' },
-  { code: 'kmr', name: 'Kurdish (Kurmanji)' },
-  { code: 'ckb', name: 'Kurdish (Sorani)' },
+  { code: 'ku', name: 'Kurdish' },
   { code: 'ky', name: 'Kyrgyz' },
   { code: 'lo', name: 'Lao' },
-  { code: 'ltg', name: 'Latgalian' },
   { code: 'la', name: 'Latin' },
   { code: 'lv', name: 'Latvian' },
-  { code: 'lij', name: 'Ligurian' },
-  { code: 'li', name: 'Limburgish' },
-  { code: 'ln', name: 'Lingala' },
   { code: 'lt', name: 'Lithuanian' },
-  { code: 'lmo', name: 'Lombard' },
-  { code: 'lg', name: 'Luganda' },
-  { code: 'luo', name: 'Luo' },
   { code: 'lb', name: 'Luxembourgish' },
   { code: 'mk', name: 'Macedonian' },
-  { code: 'mad', name: 'Madurese' },
-  { code: 'mai', name: 'Maithili' },
-  { code: 'mak', name: 'Makassar' },
   { code: 'mg', name: 'Malagasy' },
   { code: 'ms', name: 'Malay' },
-  { code: 'ms-Arab', name: 'Malay (Jawi)' },
   { code: 'ml', name: 'Malayalam' },
   { code: 'mt', name: 'Maltese' },
-  { code: 'mam', name: 'Mam' },
-  { code: 'gv', name: 'Manx' },
   { code: 'mi', name: 'Maori' },
   { code: 'mr', name: 'Marathi' },
-  { code: 'mh', name: 'Marshallese' },
-  { code: 'mwr', name: 'Marwadi' },
-  { code: 'mfe', name: 'Mauritian Creole' },
-  { code: 'mhr', name: 'Meadow Mari' },
-  { code: 'mni', name: 'Meiteilon (Manipuri)' },
-  { code: 'min', name: 'Minang' },
-  { code: 'lus', name: 'Mizo' },
   { code: 'mn', name: 'Mongolian' },
   { code: 'my', name: 'Myanmar (Burmese)' },
-  { code: 'nah', name: 'Nahuatl (Eastern Huasteca)' },
-  { code: 'ndc', name: 'Ndau' },
-  { code: 'nr', name: 'Ndebele (South)' },
-  { code: 'new', name: 'Nepalbhasa (Newari)' },
   { code: 'ne', name: 'Nepali' },
-  { code: 'nqo', name: 'NKo' },
   { code: 'no', name: 'Norwegian' },
-  { code: 'nus', name: 'Nuer' },
   { code: 'oc', name: 'Occitan' },
-  { code: 'or', name: 'Odia (Oriya)' },
+  { code: 'or', name: 'Odia' },
   { code: 'om', name: 'Oromo' },
-  { code: 'os', name: 'Ossetian' },
-  { code: 'pag', name: 'Pangasinan' },
-  { code: 'pap', name: 'Papiamento' },
   { code: 'ps', name: 'Pashto' },
   { code: 'fa', name: 'Persian' },
   { code: 'pl', name: 'Polish' },
   { code: 'pt-BR', name: 'Portuguese (Brazil)' },
-  { code: 'pt', name: 'Portuguese (Portugal)' },
-  { code: 'pa', name: 'Punjabi (Gurmukhi)' },
-  { code: 'pa-Arab', name: 'Punjabi (Shahmukhi)' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'pa', name: 'Punjabi' },
   { code: 'qu', name: 'Quechua' },
-  { code: 'quc', name: 'Qʼeqchiʼ' },
-  { code: 'rom', name: 'Romani' },
   { code: 'ro', name: 'Romanian' },
-  { code: 'rn', name: 'Rundi' },
   { code: 'ru', name: 'Russian' },
-  { code: 'se', name: 'Sami (North)' },
   { code: 'sm', name: 'Samoan' },
   { code: 'sg', name: 'Sango' },
   { code: 'sa', name: 'Sanskrit' },
-  { code: 'sat', name: 'Santali (Latin)' },
-  { code: 'sat', name: 'Santali (Ol Chiki)' },
-  { code: 'gd', name: 'Scots Gaelic' },
-  { code: 'nso', name: 'Sepedi' },
   { code: 'sr', name: 'Serbian' },
-  { code: 'st', name: 'Sesotho' },
-  { code: 'crs', name: 'Seychellois Creole' },
-  { code: 'shn', name: 'Shan' },
   { code: 'sn', name: 'Shona' },
-  { code: 'scn', name: 'Sicilian' },
-  { code: 'szl', name: 'Silesian' },
   { code: 'sd', name: 'Sindhi' },
   { code: 'si', name: 'Sinhala' },
   { code: 'sk', name: 'Slovak' },
@@ -208,61 +128,34 @@ const LANGUAGES = [
   { code: 'so', name: 'Somali' },
   { code: 'es', name: 'Spanish' },
   { code: 'su', name: 'Sundanese' },
-  { code: 'sus', name: 'Susu' },
   { code: 'sw', name: 'Swahili' },
-  { code: 'ss', name: 'Swati' },
   { code: 'sv', name: 'Swedish' },
-  { code: 'ty', name: 'Tahitian' },
   { code: 'tg', name: 'Tajik' },
-  { code: 'tzm', name: 'Tamazight' },
-  { code: 'tzm', name: 'Tamazight (Tifinagh)' },
   { code: 'ta', name: 'Tamil' },
   { code: 'tt', name: 'Tatar' },
   { code: 'te', name: 'Telugu' },
-  { code: 'tet', name: 'Tetum' },
   { code: 'th', name: 'Thai' },
   { code: 'bo', name: 'Tibetan' },
   { code: 'ti', name: 'Tigrinya' },
-  { code: 'tiv', name: 'Tiv' },
-  { code: 'tpi', name: 'Tok Pisin' },
   { code: 'to', name: 'Tongan' },
-  { code: 'lua', name: 'Tshiluba' },
-  { code: 'ts', name: 'Tsonga' },
-  { code: 'tn', name: 'Tswana' },
-  { code: 'tcy', name: 'Tulu' },
-  { code: 'tum', name: 'Tumbuka' },
   { code: 'tr', name: 'Turkish' },
   { code: 'tk', name: 'Turkmen' },
-  { code: 'tyv', name: 'Tuvan' },
-  { code: 'tw', name: 'Twi' },
-  { code: 'udm', name: 'Udmurt' },
   { code: 'uk', name: 'Ukrainian' },
   { code: 'ur', name: 'Urdu' },
   { code: 'ug', name: 'Uyghur' },
   { code: 'uz', name: 'Uzbek' },
-  { code: 've', name: 'Venda' },
-  { code: 'vec', name: 'Venetian' },
   { code: 'vi', name: 'Vietnamese' },
   { code: 'war', name: 'Waray' },
   { code: 'cy', name: 'Welsh' },
   { code: 'wo', name: 'Wolof' },
   { code: 'xh', name: 'Xhosa' },
-  { code: 'sah', name: 'Yakut' },
   { code: 'yi', name: 'Yiddish' },
   { code: 'yo', name: 'Yoruba' },
-  { code: 'yua', name: 'Yucatec Maya' },
-  { code: 'zap', name: 'Zapotec' },
   { code: 'zu', name: 'Zulu' },
-  // Philippine languages
   { code: 'tl', name: 'Tagalog' },
-  { code: 'fil', name: 'Filipino' },
-  { code: 'ilo', name: 'Ilocano' },
   { code: 'itw', name: 'Itawit' },
-  { code: 'war', name: 'Waray' },
-  { code: 'ceb', name: 'Cebuano' },
   { code: 'pag', name: 'Pangasinan' },
   { code: 'kap', name: 'Kapampangan' },
-  { code: 'hil', name: 'Hiligaynon' },
   { code: 'bik', name: 'Bikol' },
 ];
 
@@ -284,6 +177,17 @@ const QUICK_PHRASES = [
   { text: 'Kunnasi ka?', label: 'How are you?' },
 ];
 
+interface HistoryItem {
+  id: number;
+  text: string;
+  voice: string;
+  emotion: string;
+  language: string;
+  audio_path: string;
+  duration: number;
+  created_at: string;
+}
+
 function App() {
   const [text, setText] = useState('Ma-ngo! Mabbalat.');
   const [voice, setVoice] = useState('itawit');
@@ -293,8 +197,26 @@ function App() {
   const [transcribing, setTranscribing] = useState(false);
   const [error, setError] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch(`${API_URL}/generations`);
+      if (res.ok) {
+        const data = await res.json();
+        setHistory(data.generations || []);
+      }
+    } catch {
+      console.error('Failed to fetch history');
+    }
+  };
 
   const generate = async () => {
     if (!text.trim()) {
@@ -318,6 +240,7 @@ function App() {
       const data = await res.json();
       const url = data.audio_url || `${API_URL}/audio/${data.path}`;
       setAudioUrl(url);
+      fetchHistory();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to generate');
     } finally {
@@ -380,6 +303,33 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const playHistory = (item: HistoryItem) => {
+    const url = item.audio_path?.startsWith('http') 
+      ? item.audio_path 
+      : `${API_URL}/audio/${item.audio_path}`;
+    setAudioUrl(url);
+  };
+
+  const downloadAudio = (item: HistoryItem) => {
+    const url = item.audio_path?.startsWith('http') 
+      ? item.audio_path 
+      : `${API_URL}/audio/${item.audio_path}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `eburon_${item.id}.wav`;
+    link.click();
+  };
+
+  const copyToInput = (item: HistoryItem) => {
+    setText(item.text);
+    setVoice(item.voice);
+    setEmotion(item.emotion);
+  };
+
+  const toggleExpand = (id: number) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
   return (
@@ -470,6 +420,50 @@ function App() {
             ))}
           </div>
         </div>
+
+        {history.length > 0 && (
+          <div className="history-section">
+            <h3>Generation History</h3>
+            <div className="history-list">
+              {history.map((item) => (
+                <div key={item.id} className="history-item">
+                  <div className="history-header" onClick={() => toggleExpand(item.id)}>
+                    <div className="history-info">
+                      <span className="history-text-preview">
+                        {item.text?.substring(0, 50)}...
+                      </span>
+                      <span className="history-meta">
+                        {item.voice} • {item.emotion} • {item.duration?.toFixed(1)}s
+                      </span>
+                    </div>
+                    <span className="expand-icon">{expandedId === item.id ? '▼' : '▶'}</span>
+                  </div>
+                  
+                  {expandedId === item.id && (
+                    <div className="history-details">
+                      <div className="history-full-text">
+                        <strong>Script:</strong>
+                        <p>{item.text}</p>
+                      </div>
+                      <div className="history-metadata">
+                        <span>Voice: {item.voice}</span>
+                        <span>Emotion: {item.emotion}</span>
+                        <span>Language: {item.language}</span>
+                        <span>Duration: {item.duration?.toFixed(2)}s</span>
+                        <span>Created: {new Date(item.created_at).toLocaleString()}</span>
+                      </div>
+                      <div className="history-actions">
+                        <button onClick={() => playHistory(item)}>▶ Play</button>
+                        <button onClick={() => downloadAudio(item)}>↓ Download</button>
+                        <button onClick={() => copyToInput(item)}>📋 Use Text</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       <footer className="footer">

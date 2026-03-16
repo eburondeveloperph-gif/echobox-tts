@@ -433,17 +433,18 @@ VOICE_PRESETS = {
     "floyd": {"speed": 1.0, "pitch": 2},
 }
 
-# Emotion mappings for natural nuances - HIGH INTENSITY
+# Emotion mappings - PRESERVES BASE VOICE characteristics while adding emotion
+# Each prompt includes "maintain [voice] characteristics" to keep voice consistent
 EMOTION_PROMPTS = {
-    "happy": "Joyful exuberant tone, bright cheerful voice, infectious happiness, warm radiant delivery, animated and lively",
-    "sad": "Deep sorrowful tone, heavy heartbroken voice, devastating grief, mournful melancholic delivery, profound sadness",
-    "angry": "Furious raging tone, fierce aggressive voice, intense burning anger, seething with rage, forceful powerful delivery",
-    "excited": "Electrifying enthusiastic tone,激动不已的声音, exploding with excitement, breathless anticipation, high-energy electrified delivery",
-    "calm": "Serene peaceful tone, gentle tranquil voice, deep inner peace, soothing mellow delivery, tranquil relaxed atmosphere",
-    "fear": "Terrified trembling tone, scared frightened voice, panic-stricken, nervous shaky delivery, anxious terrified whisper",
-    "disgust": "Repulsed revolted tone, disgusted contemptuous voice, extreme aversion, nauseated delivery, sickened repulsed tone",
-    "surprised": "Stunned shocked tone, completely bewildered voice, jaw-dropping astonishment, utterly amazed delivery, blown-away reaction",
-    "neutral": "Natural conversational tone, regular speaking voice, balanced and steady delivery, clear and neutral",
+    "happy": "Joyful exuberant tone while maintaining original voice characteristics, bright cheerful voice, infectious happiness, warm radiant delivery, animated and lively - keep your natural voice pitch and timbre",
+    "sad": "Deep sorrowful tone while maintaining original voice characteristics, heavy heartbroken voice, devastating grief, mournful melancholic delivery, profound sadness - preserve your natural voice quality",
+    "angry": "Furious raging tone while maintaining original voice characteristics, fierce aggressive voice, intense burning anger, seething with rage, forceful powerful delivery - keep your natural voice pitch",
+    "excited": "Electrifying enthusiastic tone while maintaining original voice characteristics, exploding with excitement, breathless anticipation, high-energy electrified delivery - preserve your natural voice timbre",
+    "calm": "Serene peaceful tone while maintaining original voice characteristics, gentle tranquil voice, deep inner peace, soothing mellow delivery, tranquil relaxed atmosphere - keep your natural voice quality",
+    "fear": "Terrified trembling tone while maintaining original voice characteristics, scared frightened voice, panic-stricken, nervous shaky delivery, anxious terrified whisper - preserve your natural voice pitch",
+    "disgust": "Repulsed revolted tone while maintaining original voice characteristics, disgusted contemptuous voice, extreme aversion, nauseated delivery, sickened repulsed tone - keep your natural voice timbre",
+    "surprised": "Stunned shocked tone while maintaining original voice characteristics, completely bewildered voice, jaw-dropping astonishment, utterly amazed delivery, blown-away reaction - preserve your natural voice quality",
+    "neutral": "Natural conversational tone, regular speaking voice, balanced and steady delivery, clear and neutral - maintain your natural voice characteristics",
 }
 
 # Style modifiers for prosody control
@@ -692,68 +693,80 @@ async def generate_speech(request: TTSRequest):
     }
 
     # Build instruct from emotion/style or use default voice description
-    # Add emotion-specific speed and pitch for more intense output
-    emotion_speed = {"pitch": 1.0}
+    # PRESERVE voice characteristics - minimal prosody adjustments
+    emotion_speed = {"pitch": 1.0, "speed": 1.0}
+    voice_preserve = (
+        "MAINTAIN YOUR ORIGINAL VOICE CHARACTERISTICS, PITCH, AND TIMBRE THROUGHOUT"
+    )
 
     if emotion or style:
         instruct = build_nuance_prompt(emotion or "", style or "")
 
-        # Add emotion-specific prosody adjustments for intensity
+        # Minimal prosody adjustments to preserve voice while adding emotion
+        # These values are moderate to keep voice consistent
         if emotion == "angry":
-            emotion_speed = {"speed": 1.15, "pitch": 1.3}
+            emotion_speed = {"speed": 1.05, "pitch": 1.1}
             instruct = (
-                "ANGRY FURIOUS RAGING VOICE: "
+                f"{voice_preserve}. "
+                + "ANGRY FURIOUS EMOTION: "
                 + instruct
-                + " speak with INTENSE RAW UNCONTROLLED EMOTION"
+                + " speak with intense but controlled emotional delivery"
             )
         elif emotion == "happy":
-            emotion_speed = {"speed": 1.2, "pitch": 1.2}
+            emotion_speed = {"speed": 1.08, "pitch": 1.05}
             instruct = (
-                "HAPPY JOYFUL EXCITED VOICE: "
+                f"{voice_preserve}. "
+                + "HAPPY JOYFUL EMOTION: "
                 + instruct
-                + " speak with RADIANT EUPHORIC ENERGY"
+                + " speak with warm cheerful delivery"
             )
         elif emotion == "sad":
-            emotion_speed = {"speed": 0.75, "pitch": 0.8}
+            emotion_speed = {"speed": 0.95, "pitch": 0.95}
             instruct = (
-                "SAD MELANCHOLIC HEAVY HEART VOICE: "
+                f"{voice_preserve}. "
+                + "SAD MELANCHOLIC EMOTION: "
                 + instruct
-                + " speak with DEVASTATING GRIEF AND SORROW"
+                + " speak with somber emotional delivery"
             )
         elif emotion == "excited":
-            emotion_speed = {"speed": 1.3, "pitch": 1.4}
+            emotion_speed = {"speed": 1.1, "pitch": 1.08}
             instruct = (
-                "EXCITED ELECTRIFIED MANIC VOICE: "
+                f"{voice_preserve}. "
+                + "EXCITED ENTHUSIASTIC EMOTION: "
                 + instruct
-                + " speak with FRANTIC ENERGY AND HYSTERICAL EXCITEMENT"
+                + " speak with energetic delivery"
             )
         elif emotion == "calm":
-            emotion_speed = {"speed": 0.85, "pitch": 0.9}
+            emotion_speed = {"speed": 0.98, "pitch": 0.98}
             instruct = (
-                "CALM SERENE TRANQUIL VOICE: "
+                f"{voice_preserve}. "
+                + "CALM SERENE EMOTION: "
                 + instruct
-                + " speak with PEACEFUL GENTLE SOFTNESS"
+                + " speak with peaceful gentle delivery"
             )
         elif emotion == "fear":
-            emotion_speed = {"speed": 1.4, "pitch": 1.5}
+            emotion_speed = {"speed": 1.02, "pitch": 1.1}
             instruct = (
-                "TERRIFIED PANIC-STRICKEN SCREAMING VOICE: "
+                f"{voice_preserve}. "
+                + "FEARFUL CONCERNED EMOTION: "
                 + instruct
-                + " speak with PARANOID FEAR AND TERROR"
+                + " speak with anxious worried delivery"
             )
         elif emotion == "disgust":
-            emotion_speed = {"speed": 0.7, "pitch": 1.1}
+            emotion_speed = {"speed": 0.95, "pitch": 1.02}
             instruct = (
-                "DISGUSTED REVOLTED SICKENED VOICE: "
+                f"{voice_preserve}. "
+                + "DISGUSTED AVERSION EMOTION: "
                 + instruct
-                + " speak with EXTREME REPULSION AND NAUSEA"
+                + " speak with reluctant displeased delivery"
             )
         elif emotion == "surprised":
-            emotion_speed = {"speed": 1.25, "pitch": 1.35}
+            emotion_speed = {"speed": 1.05, "pitch": 1.08}
             instruct = (
-                "SHOCKED STUNNED BLOWN AWAY VOICE: "
+                f"{voice_preserve}. "
+                + "SURPRISED ASTONISHED EMOTION: "
                 + instruct
-                + " speak with JAW-DROPPING ASTONISHMENT"
+                + " speak with amazed surprised delivery"
             )
     else:
         instruct = voice_descriptions.get(voice, voice_descriptions["echo"])

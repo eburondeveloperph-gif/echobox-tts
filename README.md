@@ -53,6 +53,27 @@ railway deploy
 | `/clone` | POST | Clone voice |
 | `/transcribe` | POST | STT transcription |
 
+## API Usage
+
+### Generate TTS
+```bash
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Ma-ngo! Mabbalat.", "voice": "itawit"}'
+```
+
+### Clone Voice
+```bash
+curl -X POST http://localhost:8000/clone \
+  -F "audio=@voice.wav"
+```
+
+### Transcribe
+```bash
+curl -X POST http://localhost:8000/transcribe \
+  -F "audio=@speech.wav"
+```
+
 ## License
 
 Proprietary - All rights reserved © 2026 Eburon

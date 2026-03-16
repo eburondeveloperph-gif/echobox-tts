@@ -199,6 +199,7 @@ function App() {
   const [audioUrl, setAudioUrl] = useState('');
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -333,7 +334,63 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+      <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        {sidebarOpen ? '◀' : '▶'}
+      </button>
+
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-section">
+          <h4>Voice</h4>
+          <select value={voice} onChange={(e) => setVoice(e.target.value)}>
+            <option value="itawit">Itawit (Native)</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+          </select>
+        </div>
+
+        <div className="sidebar-section">
+          <h4>Emotion</h4>
+          <div className="sidebar-emotions">
+            {EMOTIONS.map((e) => (
+              <button
+                key={e.id}
+                className={`emotion-btn ${emotion === e.id ? 'active' : ''}`}
+                onClick={() => setEmotion(e.id)}
+              >
+                {e.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <h4>STT Language</h4>
+          <select value={sttLang} onChange={(e) => setSttLang(e.target.value)}>
+            {LANGUAGES.slice(0, 50).map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="sidebar-section">
+          <h4>Quick Phrases</h4>
+          <div className="sidebar-phrases">
+            {QUICK_PHRASES.map((p) => (
+              <button
+                key={p.text}
+                className="phrase-btn"
+                onClick={() => setText(p.text)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </aside>
+
       <header className="header">
         <div>
           <div className="logo">Eburon TTS</div>
@@ -349,25 +406,8 @@ function App() {
             placeholder="Enter text or record speech..."
           />
 
-          <div className="emotions">
-            {EMOTIONS.map((e) => (
-              <button
-                key={e.id}
-                className={`emotion-btn ${emotion === e.id ? 'active' : ''}`}
-                onClick={() => setEmotion(e.id)}
-              >
-                {e.label}
-              </button>
-            ))}
-          </div>
-
           <div className="controls">
-            <select value={voice} onChange={(e) => setVoice(e.target.value)}>
-              <option value="itawit">Itawit (Native)</option>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-            </select>
-            <button onClick={generate} disabled={loading}>
+            <button onClick={generate} disabled={loading} style={{ width: '100%' }}>
               {loading ? 'Generating...' : 'Generate Speech'}
             </button>
           </div>
@@ -376,17 +416,10 @@ function App() {
         <div className="input-section">
           <h3>Speech to Text (STT)</h3>
           <div className="controls" style={{ marginTop: '1rem' }}>
-            <select value={sttLang} onChange={(e) => setSttLang(e.target.value)}>
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
             <button
               onClick={transcribing ? stopRecording : startRecording}
               disabled={loading}
-              style={{ background: transcribing ? '#ff4444' : '#32CD32' }}
+              style={{ width: '100%', background: transcribing ? '#ff4444' : '#32CD32' }}
             >
               {transcribing ? 'Stop Recording' : 'Record & Transcribe'}
             </button>
@@ -405,21 +438,6 @@ function App() {
             <audio src={audioUrl} controls />
           </div>
         )}
-
-        <div className="quick-phrases">
-          <h3>Quick Phrases</h3>
-          <div className="emotions">
-            {QUICK_PHRASES.map((p) => (
-              <button
-                key={p.text}
-                className="emotion-btn"
-                onClick={() => setText(p.text)}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {history.length > 0 && (
           <div className="history-section">
